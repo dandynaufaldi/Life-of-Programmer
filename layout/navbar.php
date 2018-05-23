@@ -1,4 +1,17 @@
-<?php include_once ('functioncoll.php');?>
+<?php
+    include_once ('functioncoll.php');
+    $userid = getUserID($_SESSION['username']);
+    $user = getUserStats($userid);
+    var_dump($_SESSION);
+    $level = $user['LEVEL_ID'];
+    $exp = $user['USER_EXP'];
+    $money = $user['USER_MONEY'];
+    $stamina = $user['USER_STAMINA'];
+    $max_stamina = getMaxStamina($level);
+    $max_exp = getMaxExp($level);
+    $stamina_width = $stamina/$max_stamina*100;
+    $exp_width = $exp/$max_exp*100;
+?>
 <nav class="nav navbar-inverse" style="font-weight: bold;">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -28,25 +41,44 @@
 </nav>
 <nav class="nav navbar-inverse" style="color: #9d9d9d; line-height: 20px; padding: 10px 0px;">
     <div class="container-fluid ">
-        <div class="col-md-6 nav navbar-nav" style="padding: 10px 0px;">
+        <div class="col-md-5 nav navbar-nav" style="padding: 10px 0px;">
             <div class="col-md-4">Now doing:
                 <span id="#nowdoing"></span>
             </div>
             <div class="col-md-8" style="font-weight: bold;"></div>
         </div>
-        <div class="col-md-6 nav navbar-nav">
-            <div class="col-md-4"><span style="font-weight: bold;">Money</span>
-                <div id="u_money">aa</div>
+        <div class="col-md-7 nav navbar-nav" style="text-align: center;">
+            <div class="col-md-3"><span style="font-weight: bold;">Money</span>
+                <div id="u_money" style="margin: 5px 0;">$<?php echo $money; ?></div>
             </div>
             <div class="col-md-3"><span style="font-weight: bold;">Stamina</span>
-                <div id="u_stamina">aa</div>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?php echo $stamina;?>" aria-valuemin="0" aria-valuemax="<?php echo $max_stamina;?>" style="width: <?php echo $stamina_width;?>%;">
+                        <span><?php echo $stamina;?>/<?php echo $max_stamina;?></span>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-3"><span style="font-weight: bold;">Experience</span>
-                <div id="u_exp">aa</div>
+            <div class="col-md-4"><span style="font-weight: bold;">Experience</span>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="<?php echo $exp;?>" aria-valuemin="0" aria-valuemax="<?php echo $max_exp;?>" style="width: <?php echo $exp_width;?>%;">
+                        <span><?php echo $exp;?>/<?php echo $max_exp;?></span>
+                    </div>
+                </div>
             </div>
             <div class="col-md-2"><span style="font-weight: bold;">Level</span>
-                <div id="u_level">aa</div>
+                <div id="u_level" style="margin: 5px 0;"><?php echo $level; ?></div>
             </div>
         </div>
     </div>
 </nav>
+<?php
+    print_r(getUserStats($_SESSION['userid']));
+    echo '<br>';
+    print_r(getMaxStamina($level));
+    echo '<br>';
+    print_r(getMaxExp($level));
+    echo "<br>";
+    var_dump(getActiveCourse($userid)) ;
+date_default_timezone_set("Asia/Bangkok");
+    echo "<br>"."The time is " . date("H:i:sa");
+//?>

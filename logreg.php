@@ -1,11 +1,13 @@
 <?php
     include_once ('_conn.php');
+    include_once ('functioncoll.php');
     if (isset($_POST['r_username']) && isset($_POST['r_password']) && isset($_POST['r_name'])){
         $username = mysqli_real_escape_string($db, $_POST['r_username']);
         $pass = mysqli_real_escape_string($db, $_POST['r_password']);
         $name = mysqli_real_escape_string($db, $_POST['r_name']);
         $ql = "CALL sp_register('$username', '$pass', '$name')";
         $result = $db->query($ql);
+        if (!$result) die("gagal");
         $data = $result->fetch_array();
         if ($data[0] != 0){
             $_SESSION['error'] = $data[1];
@@ -14,6 +16,7 @@
         }
         else{
             $_SESSION['username'] = $username;
+//            $_SESSION['userid'] = getUserID($username);
             $_SESSION['last_active'] = time();
             $_SESSION['expired'] = $_SESSION['last_active'] + (3 * 60 * 60);
             setcookie("username", $username, time() + (3*60*60), "/");
@@ -26,6 +29,7 @@
         $pass = mysqli_real_escape_string($db, $_POST['l_password']);
         $ql = "CALL sp_login('$username', '$pass')";
         $result = $db->query($ql);
+        if (!$result) die("gagal");
         $data = $result->fetch_array();
         if ($data[0] != 0){
             $_SESSION['error'] = $data[1];
@@ -34,6 +38,7 @@
         }
         else{
             $_SESSION['username'] = $username;
+//            $_SESSION['userid'] = getUserID($username);
             $_SESSION['last_active'] = time();
             $_SESSION['expired'] = $_SESSION['last_active'] + (3 * 60 * 60);
             setcookie("username", $username, time() + (3*60*60), "/");

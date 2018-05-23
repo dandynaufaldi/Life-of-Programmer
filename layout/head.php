@@ -11,5 +11,16 @@
             /*font-family: 'Raleway', sans-serif;*/
             font-family: 'IBM Plex Sans', sans-serif;
         }
+        .progress {
+            position: relative;
+            margin: 10px 0 0 0;
+        }
+
+        .progress span {
+            position: absolute;
+            display: block;
+            width: 100%;
+            color: black;
+        }
     </style>
 </head>
