@@ -9,7 +9,7 @@
         $data = $result->fetch_array();
         if ($data[0] != 0){
             $_SESSION['error'] = $data[1];
-            header('location: index.php');
+            header('Location: index.php');
             exit();
         }
         else{
@@ -17,7 +17,7 @@
             $_SESSION['last_active'] = time();
             $_SESSION['expired'] = $_SESSION['last_active'] + (3 * 60 * 60);
             setcookie("username", $username, time() + (3*60*60), "/");
-//            header('location: main.php');
+            header('Location: home.php');
             exit();
         }
     }
@@ -29,7 +29,7 @@
         $data = $result->fetch_array();
         if ($data[0] != 0){
             $_SESSION['error'] = $data[1];
-            header('location: index.php');
+            header('Location: index.php');
             exit();
         }
         else{
@@ -37,8 +37,17 @@
             $_SESSION['last_active'] = time();
             $_SESSION['expired'] = $_SESSION['last_active'] + (3 * 60 * 60);
             setcookie("username", $username, time() + (3*60*60), "/");
-//            header('location: main.php');
+            header('Location: home.php');
             exit();
         }
+    }
+    else if (isset($_POST['logout'])){
+        unset($_SESSION['username']);
+        unset($_SESSION['last_active']);
+        unset($_SESSION['expired']);
+        session_destroy();
+        setcookie("username", "", time() - (3*60*60), "/");
+        header('Location: index.php');
+        exit();
     }
 ?>

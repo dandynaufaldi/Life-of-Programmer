@@ -1,6 +1,19 @@
 <?php
     include_once ('_conn.php');
+    if (isset($_COOKIE['username']) && isset($_SESSION['username'])) {
+        header('Location: home.php');
+        exit();
+    }
+//    echo $_SERVER['REQUEST_URI'];
+//    $str = $_SERVER['REQUEST_URI'];
+//    echo substr($str, strrpos($str, '/') + 1);
+//    $a = NULL;
+//    if ($a){
+//        echo "true";
+//    }
+//    else echo "false";
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,10 +22,11 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
     <style>
         body{
-            font-family: 'Raleway', sans-serif;
+            font-family: 'IBM Plex Sans', sans-serif;
         }
         .btn-default{
             background: none;
@@ -42,7 +56,7 @@
                     <form action="logreg.php" method="POST">
                         <label for="username_l" class="control-label">Username</label>
                         <div class="input-group">
-                            <input id="username_l" type="text" class="form-control" name="username_l" placeholder="Your username" required>
+                            <input id="username_l" type="text" class="form-control" name="l_username" placeholder="Your username" required>
                             <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
                         </div>
                         <br>
@@ -99,10 +113,12 @@
         </div>
     </div>
     <div class="container">
-        <div class="row">
+        <div class="row center-block">
             <div class="col-md-6 col-md-offset-3">
-                <h1 style="font-size: 8em; color: white; text-align: center;" class="center-block">
-                    <strong>Life<br>of<br>Programmer</strong>
+                <img src="img/logo_1.png" style="width: 80%;" class="center-block">
+                <br><br>
+                <h1 style="font-size: 6em; color: white; text-align: center; font-family: 'Roboto Slab', serif;" class="">
+                    <strong>Life of Programmer</strong>
                 </h1>
             </div>
         </div>
