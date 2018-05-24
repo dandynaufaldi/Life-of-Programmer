@@ -2,7 +2,6 @@
     include_once ('functioncoll.php');
     $userid = getUserID($_SESSION['username']);
     $user = getUserStats($userid);
-    var_dump($_SESSION);
     $level = $user['LEVEL_ID'];
     $exp = $user['USER_EXP'];
     $money = $user['USER_MONEY'];
@@ -11,6 +10,7 @@
     $max_exp = getMaxExp($level);
     $stamina_width = $stamina/$max_stamina*100;
     $exp_width = $exp/$max_exp*100;
+    var_dump($_REQUEST);
 ?>
 <nav class="nav navbar-inverse" style="font-weight: bold;">
     <div class="container-fluid">
@@ -53,8 +53,8 @@
             </div>
             <div class="col-md-3"><span style="font-weight: bold;">Stamina</span>
                 <div class="progress">
-                    <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?php echo $stamina;?>" aria-valuemin="0" aria-valuemax="<?php echo $max_stamina;?>" style="width: <?php echo $stamina_width;?>%;">
-                        <span><?php echo $stamina;?>/<?php echo $max_stamina;?></span>
+                    <div id="staminabar" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="<?php echo $stamina;?>" aria-valuemin="0" aria-valuemax="<?php echo $max_stamina;?>" style="width: <?php echo $stamina_width;?>%;">
+                        <span id="staminaval"><?php echo $stamina.'/'.$max_stamina;?></span>
                     </div>
                 </div>
             </div>
@@ -72,13 +72,25 @@
     </div>
 </nav>
 <?php
-    print_r(getUserStats($_SESSION['userid']));
-    echo '<br>';
-    print_r(getMaxStamina($level));
-    echo '<br>';
-    print_r(getMaxExp($level));
-    echo "<br>";
-    var_dump(getActiveCourse($userid)) ;
-date_default_timezone_set("Asia/Bangkok");
-    echo "<br>"."The time is " . date("H:i:sa");
+//    var_dump(getUserStats($userid));
+//    echo '<br>';
+//    $hehe = getActiveJob($userid);
+////    var_dump($hehe);
+//    if ($hehe){
+//        foreach ($hehe as $hh){
+//            echo $hh['JOB_ID'];
+//        }
+//    }
+//
+//    echo '<br>';
+//    print_r(getMaxExp($level));
+//    echo "<br>";
+//    $aa = getUserSkill($userid);
+//    var_dump($aa->fetch_assoc()) ;
+//    $aa->close();
+//    $db->next_result();
+//    echo "<br>";
+////    var_dump(getUserCourse($userid)->fetch_assoc()) ;
+//date_default_timezone_set("Asia/Bangkok");
+//    echo "<br>"."The time is " . date("H:i:sa");
 //?>

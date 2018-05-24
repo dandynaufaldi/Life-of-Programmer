@@ -11,44 +11,85 @@
 
     function getUserStats($id){
         global $db;
-        $q = "SELECT LEVEL_ID, USER_EXP, USER_MONEY, USER_STAMINA FROM user WHERE USER_ID = '$id'";
+        $q = "CALL sp_getuserstats('$id')";
         $result = $db->query($q);
-        $data = $result->fetch_array();
+        $data = $result->fetch_assoc();
+        $result->close();
+        $db->next_result();
         return $data;
     }
 
     function getMaxStamina($level){
         global $db;
-        $q = "SELECT LEVEL_MAX_STAMINA FROM level_user WHERE LEVEL_ID = '$level'";
+        $q = "CALL sp_getmaxstamina('$level')";
         $result = $db->query($q);
-        $data = $result->fetch_array();
+        $data = $result->fetch_assoc();
+        $result->close();
+        $db->next_result();
         return $data['LEVEL_MAX_STAMINA'];
     }
 
     function getMaxExp($level){
         global $db;
-        $q = "SELECT LEVEL_MAX_EXP FROM level_user WHERE LEVEL_ID = '$level'";
+        $q = "CALL sp_getmaxexp('$level')";
         $result = $db->query($q);
-        $data = $result->fetch_array();
+        $data = $result->fetch_assoc();
+        $result->close();
+        $db->next_result();
         return $data['LEVEL_MAX_EXP'];
     }
 
     function getUserID($username){
         global $db;
-        $q = "SELECT USER_ID FROM user WHERE USER_UNAME = '$username'";
-//        var_dump($q);
+        $q = "CALL sp_getuserid('$username')";
         $result = $db->query($q);
-//        var_dump($result);
-        $data = $result->fetch_array();
+        $data = $result->fetch_assoc();
+        $result->close();
+        $db->next_result();
         return $data['USER_ID'];
     }
 
-    function getActiveCourse($userid){
+    function getQueryRes($q){
         global $db;
-        $q = "SELECT * FROM user_course WHERE USER_ID = '$userid'";
         $result = $db->query($q);
-        $data = $result->fetch_array();
+        if (!$result || $result->num_rows == 0)
+            return false;
+        return $result;
+    }
+
+    function getActiveCourse($userid){
+        $q = "SELECT * FROM user_course WHERE USER_ID = '$userid'";
+        $data = getQueryRes($q);
         return $data;
     }
 
+    function getActiveJob($userid){
+        $q = "SELECT j.JOB_NAME, j.JOB_DURATION, uj.USER_JOB_START FROM user_job uj JOIN job j ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = '$userid')";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    function getUserSkill($userid){
+        $q = "CALL sp_getuserskill('$userid')";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    function getUserCourse($userid){
+        $q = "CALL sp_getusercourse('$userid')";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    function getUserJob($userid){
+        $q = "CALL sp_getuserjob('$userid')";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    function getUserEquip($userid){
+        $q = "CALL sp_getuserequip('$userid')";
+        $data = getQueryRes($q);
+        return $data;
+    }
 ?>

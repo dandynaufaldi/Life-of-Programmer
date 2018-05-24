@@ -20,6 +20,7 @@
             position: absolute;
             display: block;
             width: 100%;
+            /*float: left;*/
             color: black;
         }
     </style>
