@@ -282,7 +282,7 @@ CREATE TABLE `user` (
   PRIMARY KEY (`USER_ID`),
   KEY `LEVEL_ID` (`LEVEL_ID`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`LEVEL_ID`) REFERENCES `level_user` (`LEVEL_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 /*Data for the table `user` */
 
@@ -366,8 +366,7 @@ BEGIN
 	else
 	select `maximum_parameter` from `maximum` where `maximum_category` = "jobtaken" into @jm;
 	SELECT COUNT(*) FROM `user_job` WHERE `USER_ID` = f_usrid into @cj;
-	if(@jm = @cj) then return 0;
-	else
+	if(@jm > @cj) then
 	select `USER_STAMINA` from `user` where `USER_ID` = f_usrid into @s0;
 	select `JOB_STAMINA` from `job` where `JOB_ID` = f_jid into @s1;
 	select count(*) from `user_skill` a, `job_skill` b where b.`JOB_ID` = f_jid and a.`USER_ID` = f_usrid and b.`SKILL_ID` = a.`SKILL_ID` into @n0;
@@ -381,10 +380,13 @@ BEGIN
 	else if(@n3 > @n2) then
 		return 0;
 	else 
+	
 		return 1;
-	end if;
-	end if;
-	end if;
+		END IF;
+	END IF;
+	END IF;
+	else
+		return 0;
 	end if;
 	end if;
     END */$$
@@ -411,7 +413,7 @@ DELIMITER $$
 /*!50003 CREATE DEFINER=`root`@`localhost` FUNCTION `fn_jobtime`(f_uid int, f_jid int) RETURNS int(11)
 BEGIN
 	select `JOB_DURATION` from `job` where `JOB_ID` = f_jid into @t0;
-	select sum(`USER_EQUIPMENT_REDUCTION`) from `user_equipment` a, `job_equipment` b where b.`JOB_ID` = f_jid and a.`USER_ID` = f_uid and b.`UPGRADE_ID` = `UPGRADE_ID` into @dt;
+	select sum(`USER_EQUIPMENT_REDUCTION`) from `user_equipment` a, `job_equipment` b where b.`JOB_ID` = f_jid and a.`USER_ID` = f_uid and b.`UPGRADE_ID` = a.`UPGRADE_ID` into @dt;
 	if(@t0 -@dt < 0) then
 	return 0;
 	else	
@@ -599,8 +601,7 @@ END;
 	set @xt = @x0 + p_dx;
 	select `maximum_parameter` from `maximum` where `maximum_category` = "usrlvl" into @maxlv;
 	select `LEVEL_MAX_EXP` from `level_user` where `LEVEL_ID` = @l0 into @max;
-	IF(@maxlv = @l0) then select -1, "Reached Maximum Level";
-	else
+	IF(@maxlv > @l0) then
 	if(@xt < @max) then
 		UPDATE `user` SET `USER_EXP` = @xt WHERE `USER_ID` = p_usrid;
 	else
@@ -681,17 +682,21 @@ END;
 	select `COURSE_STAMINA`, `COURSE_COST` from `course` where `COURSE_ID` = p_courseid
 	into @coursest, @coursecost;
 	
+	select `SKILL_ID` from `course` where `COURSE_ID` = p_courseid into @sid;
+	
 	IF(@usrbal < @coursecost) then 
 		select -1, "Uang tidak cukup";
 	else if(EXISTS(Select * from `user_course` where `USER_ID` = p_usrid and `COURSE_ID` = p_courseid)) then
 		select -1, "Tidak dapat mengambil Course yang sama sekaligus";
 	else if (@st < @coursest) then 
 		select -1, "stamina tidak cukup";
+	else if(exists(select * from `user_skill` where `USER_ID` = p_usrid and `SKILL_ID` = @sid)) then
+		select -1, "sudah memiliki skill";
 	else 
-		update `user` set `USER_MONEY` = @usrbal - @coursecost, `USER_STAMINA` = @st - @coursest, `USER_LASTACTION`=now() 
-		where `USER_ID` = p_usrid;
+		update `user` set `USER_MONEY` = @usrbal - @coursecost, `USER_STAMINA` = @st - @coursest, `USER_LASTACTION`=now() where `USER_ID` = p_usrid;
 		insert into `user_course`(`USER_ID`, `COURSE_ID`, `USER_COURSE_START`) values (p_usrid, p_courseid, now());
 		Select 0, "Sukses mengambil course";
+	end if;
 	end if;
 	end if;
 	end if;
@@ -751,8 +756,8 @@ END;
 	start transaction;
 	call sp_updatestamina(p_usrid);
 	if(fn_isjobavailable(p_usrid, p_jid)) then
-		select `JOB_PAYMENT`, `JOB_STAMINA` from `job` into @dm, @ds;
-		select `USER_MONEY`, `USER_STAMINA` from `user` into @m0, @s0;
+		select `JOB_PAYMENT`, `JOB_STAMINA` from `job` where `JOB_ID` = p_jid into @dm, @ds;
+		select `USER_MONEY`, `USER_STAMINA` from `user` where `USER_ID` = p_usrid into @m0, @s0;
 		insert into `user_job` (`USER_ID`,`JOB_ID`,`USER_JOB_START`) values (p_usrid, p_jid, now());
 		update `user` set `USER_STAMINA` = @s0 - @ds, `USER_LASTACTION` = now() where `USER_ID` = p_usrid;
 		select 0, "Take job success";
@@ -793,7 +798,7 @@ END;
 			call sp_levelupdate(p_usrid, @dx);
 			update `user` set `USER_MONEY` = @m0 + @dm where `USER_ID` = p_usrid; 
 			delete from `user_job` where `USER_ID` = p_usrid and `JOB_ID` = p_jid;
-			select 0, "Job XP taken";
+			select 0, "Job Reward taken";
 		end if;
 	end if;
 	commit;
@@ -808,15 +813,8 @@ DELIMITER $$
 
 /*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_updatestamina`(`p_usrid` INT)
 BEGIN
-DECLARE EXIT HANDLER FOR SQLEXCEPTION, NOT FOUND
-BEGIN
-	ROLLBACK;
-	-- LEAVE proc;
-END;
-	start transaction;
 	set @st = fn_stamina(p_usrid);
 	update `user` set `USER_STAMINA` = @st, `USER_LASTACTION`=now() where `USER_ID` = p_usrid;
-	commit;
 	END */$$
 DELIMITER ;
 
