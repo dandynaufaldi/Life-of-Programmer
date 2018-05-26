@@ -299,7 +299,6 @@ insert  into `user`(`USER_ID`,`LEVEL_ID`,`USER_NAME`,`USER_UNAME`,`USER_PASSWORD
 (4,1,'a','a','0cc175b9c0f1b6a831c399e269772661',0,100.00,10,'2018-05-24 22:36:41'),
 (5,1,'b','b','92eb5ffee6ae2fec3ad71c777531578f',0,100.00,10,'2018-05-23 23:25:03'),
 (6,1,'c','c','4a8a08f09d37b73795649038408b5f33',0,100.00,10,'2018-05-23 23:34:57');
-(1,1,'dosen','dosen','399d59255c9b6409d85e42d16681df24',0,100.00,10,'2018-05-25 23:42:22');
 
 
 /*Table structure for table `user_course` */
@@ -653,7 +652,9 @@ BEGIN
 	END */$$
 DELIMITER ;
 
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_leaderboard` */;
 
+DELIMITER $$
 /*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_leaderboard`()
 BEGIN
 		SELECT `USER_UNAME`, `LEVEL_ID` from `user` order by `LEVEL_ID`, `USER_EXP` desc;
