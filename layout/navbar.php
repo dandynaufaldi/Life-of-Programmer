@@ -10,7 +10,6 @@
     $max_exp = getMaxExp($level);
     $stamina_width = $stamina/$max_stamina*100;
     $exp_width = $exp/$max_exp*100;
-    var_dump($_REQUEST);
 ?>
 <nav class="nav navbar-inverse" style="font-weight: bold;">
     <div class="container-fluid">
@@ -20,7 +19,7 @@
             </a>
         </div>
         <ul class="nav navbar-nav">
-            <li class="<?php echo (getLastURL() == 'home.php') ? 'active' : '';?>"><a href="course.php">Home</a></li>
+            <li class="<?php echo (getLastURL() == 'home.php') ? 'active' : '';?>"><a href="home.php">Home</a></li>
             <li class="<?php echo (getLastURL() == 'course.php') ? 'active' : '';?>"><a href="course.php">Course</a></li>
             <li class="<?php echo (getLastURL() == 'job.php') ? 'active' : '';?>"><a href="job.php">Job</a></li>
             <li class="<?php echo (getLastURL() == 'equipment.php') ? 'active' : '';?>"><a href="equipment.php">Equipment</a></li>
@@ -42,8 +41,9 @@
 <nav class="nav navbar-inverse" style="color: #9d9d9d; line-height: 20px; padding: 10px 0px;">
     <div class="container-fluid ">
         <div class="col-md-5 nav navbar-nav" style="padding: 10px 0px;">
-            <div class="col-md-4">Now doing:
-                <span id="#nowdoing"></span>
+            <div class="col-md-4">Now doing:<span id="acttype"></span>
+                <div id="actname"></div>
+                <input type="hidden" value="" id="actid">
             </div>
             <div class="col-md-8" style="font-weight: bold;"></div>
         </div>
