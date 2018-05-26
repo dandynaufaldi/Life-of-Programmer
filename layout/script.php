@@ -12,7 +12,7 @@
                 console.log('data'+data);
                 if (data != ''){
                     console.log('update stamina');
-                    $('#staminabar').attr('valuenow', data);
+                    $('#staminabar').attr('aria-valuenow', data);
                     let lebar = data*100/<?php echo $max_stamina?>;
                     lebar +='%';
                     console.log('lebar '+lebar);
@@ -22,8 +22,11 @@
             }
         });
     };
-
+    let stambar = $('#staminabar');
+    let valnow = stambar.attr('aria-valuenow');
+    let valmax = stambar.attr('aria-valuemax');
     var interval = 1000 * 60 * 1; // where X is your every X minutes
-    setInterval(updateStamina, interval);
+    if(valnow < valmax)
+        setInterval(updateStamina, interval);
 </script>
 

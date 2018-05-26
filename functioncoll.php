@@ -92,4 +92,10 @@
         $data = getQueryRes($q);
         return $data;
     }
+
+    function getLeaderBoard(){
+        $q = "CALL sp_leaderboard()";
+        $data = getQueryRes($q);
+        return $data;
+    }
 ?>
