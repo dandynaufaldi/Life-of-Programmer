@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 24, 2018 at 04:00 PM
+-- Generation Time: May 26, 2018 at 03:18 PM
 -- Server version: 10.1.26-MariaDB
 -- PHP Version: 7.1.9
 
@@ -71,7 +71,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserid` (`p_username` VARCHAR
 	END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserjob` (`p_userid` INT(11))  BEGIN
-		SELECT uj.`USER_JOB_START`,j.JOB_NAME FROM user_job uj JOIN job j  ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = p_userid);
+		SELECT uj.`USER_JOB_START`,j.JOB_NAME FROM user_job uj JOIN job j  ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = p_userid) 
+		order BY uj.`USER_JOB_START` DESC;
 	END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserskill` (`p_userid` INT(11))  BEGIN
@@ -80,6 +81,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserskill` (`p_userid` INT(11
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserstats` (`p_userid` INT(11))  BEGIN
 		SELECT `LEVEL_ID`, `USER_EXP`, `USER_MONEY`, `USER_STAMINA` FROM `user` WHERE `USER_ID` = p_userid;
+	END$$
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_leaderboard` ()  BEGIN
+		SELECT `USER_UNAME`, `LEVEL_ID` from `user` order by `LEVEL_ID`, `USER_EXP` desc;
 	END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_levelupdate` (`p_usrid` INT, `p_dx` INT)  BEGIN
@@ -286,6 +291,20 @@ END;
 --
 -- Functions
 --
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_getcourseduration` (`f_courseid` INT(11)) RETURNS TIMESTAMP BEGIN
+	SELECT `COURSE_DURATION` FROM `course` WHERE `COURSE_ID` = f_courseid INTO @res;
+	RETURN @res;
+    END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_getjobduration` (`f_jobid` INT(11)) RETURNS TIMESTAMP BEGIN
+	SELECT `JOB_DURATION` from `job` where `JOB_ID` = f_jobid INTO @res;
+	return @res;
+    END$$
+
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_isdone` (`f_start` TIMESTAMP, `f_duration` INT(11)) RETURNS TINYINT(1) BEGIN
+	RETURN NOW() > (f_start + interval f_duration minute);
+    END$$
+
 CREATE DEFINER=`root`@`localhost` FUNCTION `fn_isjobavailable` (`f_usrid` INT, `f_jid` INT) RETURNS TINYINT(1) BEGIN
 	call sp_updatestamina(f_usrid);
 	if(exists(select * from `user_job` where `JOB_ID` = f_jid and `USER_ID` = f_usrid)) then
@@ -311,8 +330,8 @@ CREATE DEFINER=`root`@`localhost` FUNCTION `fn_isjobavailable` (`f_usrid` INT, `
     END$$
 
 CREATE DEFINER=`root`@`localhost` FUNCTION `fn_isuserfree` (`f_id` INT) RETURNS TINYINT(1) BEGIN
-	SET @tjob = exists(select 1 from `user_job`  where `USER_ID` = f_id);
-	SET @tcourse = EXISTS(SELECT 1 FROM `user_course` where `USER_ID` = f_id);
+	SET @tjob = exists(select 1 from `user_job`  where `USER_ID` = f_id AND fn_isdone(`USER_JOB_START`, fn_getjobduration(`JOB_ID`)) = 0);
+	SET @tcourse = EXISTS(SELECT 1 FROM `user_course` where `USER_ID` = f_id AND fn_isdone(`USER_COURSE_START`, fn_getcourseduration(`COURSE_ID`))= 0);
 	return NOT(@tjob or @tcourse);
 END$$
 
@@ -621,7 +640,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`USER_ID`, `LEVEL_ID`, `USER_NAME`, `USER_UNAME`, `USER_PASSWORD`, `USER_EXP`, `USER_MONEY`, `USER_STAMINA`, `USER_LASTACTION`) VALUES
-(4, 1, 'a', 'a', '0cc175b9c0f1b6a831c399e269772661', 0, 100.00, 10, '2018-05-24 13:59:51'),
+(4, 1, 'a', 'a', '0cc175b9c0f1b6a831c399e269772661', 0, 100.00, 10, '2018-05-24 15:36:41'),
 (5, 1, 'b', 'b', '92eb5ffee6ae2fec3ad71c777531578f', 0, 100.00, 10, '2018-05-23 16:25:03'),
 (6, 1, 'c', 'c', '4a8a08f09d37b73795649038408b5f33', 0, 100.00, 10, '2018-05-23 16:34:57');
 
@@ -681,7 +700,8 @@ CREATE TABLE `user_job` (
 --
 
 INSERT INTO `user_job` (`USER_ID`, `JOB_ID`, `USER_JOB_START`) VALUES
-(4, 1, '2018-05-24 10:12:40');
+(4, 1, '2018-05-24 10:12:40'),
+(4, 2, '2018-05-24 15:22:53');
 
 -- --------------------------------------------------------
 
