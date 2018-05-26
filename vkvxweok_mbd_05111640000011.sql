@@ -1,6 +1,8 @@
 /*
 SQLyog Ultimate v12.4.3 (64 bit)
+
 MySQL - 10.1.26-MariaDB : Database - vkvxweok_mbd_05111640000011
+
 *********************************************************************
 */
 
@@ -12,8 +14,8 @@ MySQL - 10.1.26-MariaDB : Database - vkvxweok_mbd_05111640000011
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-CREATE DATABASE /*!32312 IF NOT EXISTS*/`vkvxweok_mbd_05111640000011` /*!40100 DEFAULT CHARACTER SET latin1 */;
 
+CREATE DATABASE /*!32312 IF NOT EXISTS*/`vkvxweok_mbd_05111640000011` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `vkvxweok_mbd_05111640000011`;
 
 /*Table structure for table `course` */
@@ -229,6 +231,23 @@ insert  into `level_user`(`LEVEL_ID`,`LEVEL_MAX_EXP`,`LEVEL_MAX_STAMINA`,`LEVEL_
 (9,40000,20,2),
 (10,80000,22,2);
 
+
+/*Table structure for table `maximum` */
+
+DROP TABLE IF EXISTS `maximum`;
+
+CREATE TABLE `maximum` (
+  `maximum_category` varchar(30) DEFAULT NULL,
+  `maximum_parameter` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Data for the table `maximum` */
+
+insert  into `maximum`(`maximum_category`,`maximum_parameter`) values 
+('usrlvl',10),
+('equiplvl',9),
+('jobtaken',4);
+
 /*Table structure for table `skill` */
 
 DROP TABLE IF EXISTS `skill`;
@@ -270,14 +289,18 @@ CREATE TABLE `user` (
   PRIMARY KEY (`USER_ID`),
   KEY `LEVEL_ID` (`LEVEL_ID`),
   CONSTRAINT `user_ibfk_1` FOREIGN KEY (`LEVEL_ID`) REFERENCES `level_user` (`LEVEL_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
 
 /*Data for the table `user` */
 
 insert  into `user`(`USER_ID`,`LEVEL_ID`,`USER_NAME`,`USER_UNAME`,`USER_PASSWORD`,`USER_EXP`,`USER_MONEY`,`USER_STAMINA`,`USER_LASTACTION`) values 
+
 (4,1,'a','a','0cc175b9c0f1b6a831c399e269772661',0,100.00,10,'2018-05-24 22:36:41'),
 (5,1,'b','b','92eb5ffee6ae2fec3ad71c777531578f',0,100.00,10,'2018-05-23 23:25:03'),
 (6,1,'c','c','4a8a08f09d37b73795649038408b5f33',0,100.00,10,'2018-05-23 23:34:57');
+(1,1,'dosen','dosen','399d59255c9b6409d85e42d16681df24',0,100.00,10,'2018-05-25 23:42:22');
+
 
 /*Table structure for table `user_course` */
 
@@ -295,9 +318,9 @@ CREATE TABLE `user_course` (
 
 /*Data for the table `user_course` */
 
+
 insert  into `user_course`(`USER_ID`,`COURSE_ID`,`USER_COURSE_START`) values 
 (4,1,'2018-05-23 23:18:00');
-
 /*Table structure for table `user_equipment` */
 
 DROP TABLE IF EXISTS `user_equipment`;
@@ -314,6 +337,7 @@ CREATE TABLE `user_equipment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `user_equipment` */
+
 
 insert  into `user_equipment`(`USER_ID`,`UPGRADE_ID`,`USER_EQUIPMENT_LEVEL`,`USER_EQUIPMENT_REDUCTION`) values 
 (4,1,1,NULL);
@@ -403,13 +427,19 @@ BEGIN
 	call sp_updatestamina(f_usrid);
 	if(exists(select * from `user_job` where `JOB_ID` = f_jid and `USER_ID` = f_usrid)) then
 	return 0;
+	else
+	select `maximum_parameter` from `maximum` where `maximum_category` = "jobtaken" into @jm;
+	SELECT COUNT(*) FROM `user_job` WHERE `USER_ID` = f_usrid into @cj;
+	if(@jm > @cj) then
+
 	select `USER_STAMINA` from `user` where `USER_ID` = f_usrid into @s0;
 	select `JOB_STAMINA` from `job` where `JOB_ID` = f_jid into @s1;
 	select count(*) from `user_skill` a, `job_skill` b where b.`JOB_ID` = f_jid and a.`USER_ID` = f_usrid and b.`SKILL_ID` = a.`SKILL_ID` into @n0;
 	select count(*) from `job_skill` where `JOB_ID` = f_jid into @n1;
 	select count(*) from `job_equipment` a, `user_equipment` b where a.`JOB_ID` = f_jid and b.`USER_ID` = f_usrid and a.`UPGRADE_ID` = b.`UPGRADE_ID` and (a.`JOB_EQUIPMENT_LEVEL` = b.`USER_EQUIPMENT_LEVEL` or a.`JOB_EQUIPMENT_LEVEL` < b.`USER_EQUIPMENT_LEVEL`) into @n2;
 	select count(*) from `job_equipment` where `JOB_ID` = f_jid into @n3;
-	else if(@s0 < @s1) then
+
+	if(@s0 < @s1) then
 		return 0;
 	else if(@n1 > @n0) then
 		return 0;
@@ -417,8 +447,11 @@ BEGIN
 		return 0;
 	else 
 		return 1;
-	end if;
-	end if;
+		END IF;
+	END IF;
+	END IF;
+	else
+		return 0;
 	end if;
 	end if;
     END */$$
@@ -445,7 +478,7 @@ DELIMITER $$
 /*!50003 CREATE DEFINER=`root`@`localhost` FUNCTION `fn_jobtime`(f_uid int, f_jid int) RETURNS int(11)
 BEGIN
 	select `JOB_DURATION` from `job` where `JOB_ID` = f_jid into @t0;
-	select sum(`USER_EQUIPMENT_REDUCTION`) from `user_equipment` a, `job_equipment` b where b.`JOB_ID` = f_jid and a.`USER_ID` = f_uid and b.`UPGRADE_ID` = `UPGRADE_ID` into @dt;
+	select sum(`USER_EQUIPMENT_REDUCTION`) from `user_equipment` a, `job_equipment` b where b.`JOB_ID` = f_jid and a.`USER_ID` = f_uid and b.`UPGRADE_ID` = a.`UPGRADE_ID` into @dt;
 	if(@t0 -@dt < 0) then
 	return 0;
 	else	
@@ -487,90 +520,6 @@ BEGIN
     END */$$
 DELIMITER ;
 
-/* Procedure structure for procedure `sp_getmaxexp` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getmaxexp` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getmaxexp`(`p_level` INT(11))
-BEGIN
-	select LEVEL_MAX_EXP FROM level_user WHERE LEVEL_ID = p_level;
-	END */$$
-DELIMITER ;
-
-/* Procedure structure for procedure `sp_getmaxstamina` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getmaxstamina` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getmaxstamina`(`p_level` INT(11))
-BEGIN
-		SELECT LEVEL_MAX_STAMINA FROM level_user WHERE LEVEL_ID = p_level;
-	END */$$
-DELIMITER ;
-
-/* Procedure structure for procedure `sp_getusercourse` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getusercourse` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getusercourse`(`p_userid` INT(11))
-BEGIN
-		SELECT uc.`USER_COURSE_START`, c.COURSE_NAME FROM user_course uc JOIN course c ON (uc.COURSE_ID = c.COURSE_ID and uc.USER_ID=p_userid);
-	END */$$
-DELIMITER ;
-
-/* Procedure structure for procedure `sp_getuserequip` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserequip` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserequip`(`p_userid` INT(11))
-BEGIN
-		SELECT e.`UPGRADE_NAME`, ue.`USER_EQUIPMENT_LEVEL` FROM user_equipment ue JOIN equipment e ON (ue.UPGRADE_ID = e.UPGRADE_ID AND ue.USER_ID = p_userid);
-	END */$$
-DELIMITER ;
-
-/* Procedure structure for procedure `sp_getuserid` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserid` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserid`(`p_username` varchar(15))
-BEGIN
-		SELECT USER_ID FROM user WHERE USER_UNAME = `p_username`;
-	END */$$
-DELIMITER ;
-
-/* Procedure structure for procedure `sp_getuserjob` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserjob` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserjob`(`p_userid` INT(11))
-BEGIN
-		SELECT uj.`USER_JOB_START`,j.JOB_NAME FROM user_job uj JOIN job j  ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = p_userid) 
-		order BY uj.`USER_JOB_START` DESC;
-	END */$$
-DELIMITER ;
-
-/* Procedure structure for procedure `sp_getuserskill` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserskill` */;
-
-DELIMITER $$
-
-/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserskill`(`p_userid` INT(11))
-BEGIN
-		SELECT s.SKILL_NAME FROM user_skill uk JOIN skill s ON (uk.SKILL_ID = s.SKILL_ID and uk.USER_ID=p_userid);
-	END */$$
-DELIMITER ;
 
 /* Procedure structure for procedure `sp_changepassword` */
 
@@ -604,6 +553,94 @@ END;
 	END */$$
 DELIMITER ;
 
+/* Procedure structure for procedure `sp_getmaxexp` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getmaxexp` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getmaxexp`(`p_level` INT(11))
+BEGIN
+	select LEVEL_MAX_EXP FROM level_user WHERE LEVEL_ID = p_level;
+
+	END */$$
+DELIMITER ;
+
+/* Procedure structure for procedure `sp_getmaxstamina` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getmaxstamina` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getmaxstamina`(`p_level` INT(11))
+BEGIN
+		SELECT LEVEL_MAX_STAMINA FROM level_user WHERE LEVEL_ID = p_level;
+	END */$$
+DELIMITER ;
+
+/* Procedure structure for procedure `sp_getusercourse` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getusercourse` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getusercourse`(`p_userid` INT(11))
+BEGIN
+		SELECT uc.`USER_COURSE_START`, c.COURSE_NAME FROM user_course uc JOIN course c ON (uc.COURSE_ID = c.COURSE_ID AND uc.USER_ID=p_userid);
+
+	END */$$
+DELIMITER ;
+
+/* Procedure structure for procedure `sp_getuserequip` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserequip` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserequip`(`p_userid` INT(11))
+BEGIN
+		SELECT e.`UPGRADE_NAME`, ue.`USER_EQUIPMENT_LEVEL` FROM user_equipment ue JOIN equipment e ON (ue.UPGRADE_ID = e.UPGRADE_ID AND ue.USER_ID = p_userid);
+	END */$$
+DELIMITER ;
+
+/* Procedure structure for procedure `sp_getuserid` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserid` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserid`(`p_username` VARCHAR(15))
+BEGIN
+		SELECT USER_ID FROM USER WHERE USER_UNAME = `p_username`;
+
+	END */$$
+DELIMITER ;
+
+/* Procedure structure for procedure `sp_getuserjob` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserjob` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserjob`(`p_userid` INT(11))
+BEGIN
+		SELECT uj.`USER_JOB_START`,j.JOB_NAME FROM user_job uj JOIN job j  ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = p_userid) 
+		order BY uj.`USER_JOB_START` DESC;
+	END */$$
+DELIMITER ;
+
+/* Procedure structure for procedure `sp_getuserskill` */
+
+/*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserskill` */;
+
+DELIMITER $$
+
+/*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_getuserskill`(`p_userid` INT(11))
+BEGIN
+		SELECT s.SKILL_NAME FROM user_skill uk JOIN skill s ON (uk.SKILL_ID = s.SKILL_ID AND uk.USER_ID=p_userid);
+	END */$$
+DELIMITER ;
+
 /* Procedure structure for procedure `sp_getuserstats` */
 
 /*!50003 DROP PROCEDURE IF EXISTS  `sp_getuserstats` */;
@@ -616,11 +653,6 @@ BEGIN
 	END */$$
 DELIMITER ;
 
-/* Procedure structure for procedure `sp_leaderboard` */
-
-/*!50003 DROP PROCEDURE IF EXISTS  `sp_leaderboard` */;
-
-DELIMITER $$
 
 /*!50003 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_leaderboard`()
 BEGIN
@@ -644,11 +676,15 @@ END;
 	start transaction;
 	select `USER_EXP`, `LEVEL_ID` from `user` where `USER_ID` = p_usrid into @x0, @l0;
 	set @xt = @x0 + p_dx;
+	select `maximum_parameter` from `maximum` where `maximum_category` = "usrlvl" into @maxlv;
 	select `LEVEL_MAX_EXP` from `level_user` where `LEVEL_ID` = @l0 into @max;
+	IF(@maxlv > @l0) then
 	if(@xt < @max) then
 		UPDATE `user` SET `USER_EXP` = @xt WHERE `USER_ID` = p_usrid;
 	else
-		UPDATE `user` SET `USER_EXP` = @xt - @max, `LEVEL_ID` = @l0 + 1 where `USER_ID` = p_usrid; 
+		UPDATE `user` SET `USER_EXP` = 0, `LEVEL_ID` = @l0 + 1 where `USER_ID` = p_usrid; 
+	end if;	
+
 	end if;
 	commit;
 	END */$$
@@ -724,17 +760,23 @@ END;
 	select `COURSE_STAMINA`, `COURSE_COST` from `course` where `COURSE_ID` = p_courseid
 	into @coursest, @coursecost;
 	
+
+	select `SKILL_ID` from `course` where `COURSE_ID` = p_courseid into @sid;
+
 	IF(@usrbal < @coursecost) then 
 		select -1, "Uang tidak cukup";
 	else if(EXISTS(Select * from `user_course` where `USER_ID` = p_usrid and `COURSE_ID` = p_courseid)) then
 		select -1, "Tidak dapat mengambil Course yang sama sekaligus";
 	else if (@st < @coursest) then 
 		select -1, "stamina tidak cukup";
+	else if(exists(select * from `user_skill` where `USER_ID` = p_usrid and `SKILL_ID` = @sid)) then
+		select -1, "sudah memiliki skill";
 	else 
-		update `user` set `USER_MONEY` = @usrbal - @coursecost, `USER_STAMINA` = @st - @coursest, `USER_LASTACTION`=now() 
-		where `USER_ID` = p_usrid;
+		update `user` set `USER_MONEY` = @usrbal - @coursecost, `USER_STAMINA` = @st - @coursest, `USER_LASTACTION`=now() where `USER_ID` = p_usrid;
+
 		insert into `user_course`(`USER_ID`, `COURSE_ID`, `USER_COURSE_START`) values (p_usrid, p_courseid, now());
 		Select 0, "Sukses mengambil course";
+	end if;
 	end if;
 	end if;
 	end if;
@@ -813,10 +855,10 @@ BEGIN
 	-- LEAVE proc;
 END;
 	start transaction;
-	call sp_updatestamina(p_usrid);
 	if(fn_isjobavailable(p_usrid, p_jid)) then
-		select `JOB_PAYMENT`, `JOB_STAMINA` from `job` into @dm, @ds;
-		select `USER_MONEY`, `USER_STAMINA` from `user` into @m0, @s0;
+		select `JOB_PAYMENT`, `JOB_STAMINA` from `job` where `JOB_ID` = p_jid into @dm, @ds;
+		select `USER_MONEY`, `USER_STAMINA` from `user` where `USER_ID` = p_usrid into @m0, @s0;
+
 		insert into `user_job` (`USER_ID`,`JOB_ID`,`USER_JOB_START`) values (p_usrid, p_jid, now());
 		update `user` set `USER_STAMINA` = @s0 - @ds, `USER_LASTACTION` = now() where `USER_ID` = p_usrid;
 		select 0, "Take job success";
@@ -857,7 +899,8 @@ END;
 			call sp_levelupdate(p_usrid, @dx);
 			update `user` set `USER_MONEY` = @m0 + @dm where `USER_ID` = p_usrid; 
 			delete from `user_job` where `USER_ID` = p_usrid and `JOB_ID` = p_jid;
-			select 0, "Job XP taken";
+			select 0, "Job Reward taken";
+
 		end if;
 	end if;
 	commit;
@@ -878,6 +921,8 @@ BEGIN
 	-- LEAVE proc;
 END;
 	start transaction;
+	select `maximum_parameter` from `maximum` where `maximum_category` = "equiplvl" into @maxup;
+
 	select `USER_MONEY` from `user` where `USER_ID` = p_usrid into @usrbal;
 	set @cost = fn_upgradecost(p_upgrid, p_usrid);
 	if(@cost > @usrbal) then 
@@ -888,9 +933,12 @@ END;
 		if(exists(select p_upgrid from `user_equipment` where `USER_ID` = p_usrid)) then 
 			select `USER_EQUIPMENT_LEVEL`, `USER_EQUIPMENT_REDUCTION` from `user_equipment` 
 			where `USER_ID` = p_usrid and `UPGRADE_ID` = p_upgrid into @lv, @t0;
-			
+			if(@lv = @maxup) then select -1, "Reached Maximum level";
+			else
 			update `user_equipment` set `USER_EQUIPMENT_LEVEL` = @lv + 1, `USER_EQUIPMENT_REDUCTION` = @t0+@dt 
 			where `USER_ID` = p_usrid AND `UPGRADE_ID` = p_upgrid;
+			end if;
+
 		else 
 			insert into `user_equipment` (`USER_ID`, `UPGRADE_ID`, `USER_EQUIPMENT_LEVEL`, `USER_EQUIPMENT_REDUCTION`) 
 			values (p_usrid, p_upgrid, 1, @dt);
