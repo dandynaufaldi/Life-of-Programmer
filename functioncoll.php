@@ -57,17 +57,17 @@
         return $result;
     }
 
-    function getActiveCourse($userid){
-        $q = "SELECT * FROM user_course WHERE USER_ID = '$userid'";
-        $data = getQueryRes($q);
-        return $data;
-    }
-
-    function getActiveJob($userid){
-        $q = "SELECT j.JOB_NAME, j.JOB_DURATION, uj.USER_JOB_START FROM user_job uj JOIN job j ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = '$userid')";
-        $data = getQueryRes($q);
-        return $data;
-    }
+//    function getActiveCourse($userid){
+//        $q = "SELECT * FROM user_course WHERE USER_ID = '$userid'";
+//        $data = getQueryRes($q);
+//        return $data;
+//    }
+//
+//    function getActiveJob($userid){
+//        $q = "SELECT j.JOB_NAME, j.JOB_DURATION, uj.USER_JOB_START FROM user_job uj JOIN job j ON ( uj.JOB_ID = j.JOB_ID AND uj.USER_ID = '$userid')";
+//        $data = getQueryRes($q);
+//        return $data;
+//    }
 
     function getUserSkill($userid){
         $q = "CALL sp_getuserskill('$userid')";
@@ -95,6 +95,26 @@
 
     function getLeaderBoard(){
         $q = "CALL sp_leaderboard()";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    function getListCourse(){
+        $q = "CALL sp_listcourse()";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    //nanti cek lv kalau null -> beli, ga null -> upgrade
+    function getListEquip($userid){
+        $q = "CALL sp_listequip('$userid')";
+        $data = getQueryRes($q);
+        return $data;
+    }
+
+    // jangan lupa split nama equip dan lv equip
+    function getListJob(){
+        $q = "CALL sp_listjob()";
         $data = getQueryRes($q);
         return $data;
     }

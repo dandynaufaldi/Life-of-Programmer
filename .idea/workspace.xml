@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="08411bbb-78ad-456f-ade1-54d18bb886b3" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/functioncoll.php" beforeDir="false" afterPath="$PROJECT_DIR$/functioncoll.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -37,8 +38,8 @@
       <file leaf-file-name="functioncoll.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/functioncoll.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="43" column="44" selection-start-line="43" selection-start-column="14" selection-end-line="43" selection-end-column="44" />
+            <state relative-caret-position="172">
+              <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
             </state>
           </provider>
         </entry>
@@ -77,12 +78,12 @@
         <option value="$PROJECT_DIR$/logreg.php" />
         <option value="$PROJECT_DIR$/stamina.php" />
         <option value="$PROJECT_DIR$/layout/head.php" />
-        <option value="$PROJECT_DIR$/functioncoll.php" />
         <option value="$PROJECT_DIR$/leaderboard.php" />
         <option value="$PROJECT_DIR$/home.php" />
         <option value="$PROJECT_DIR$/layout/script.php" />
         <option value="$PROJECT_DIR$/processreq.php" />
         <option value="$PROJECT_DIR$/layout/navbar.php" />
+        <option value="$PROJECT_DIR$/functioncoll.php" />
       </list>
     </option>
   </component>
@@ -170,18 +171,18 @@
       <workItem from="1527061361687" duration="8756000" />
       <workItem from="1527077613221" duration="12800000" />
       <workItem from="1527141180062" duration="28697000" />
-      <workItem from="1527340180162" duration="2821000" />
+      <workItem from="1527340180162" duration="5085000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="72721000" />
+    <option name="totallyTimeSpent" value="74985000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.17700455" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.17700455" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" weight="0.004769475" />
@@ -190,7 +191,7 @@
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32838285" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="7" visible="true" weight="0.32838285" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -486,8 +487,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/functioncoll.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="43" column="44" selection-start-line="43" selection-start-column="14" selection-end-line="43" selection-end-column="44" />
+        <state relative-caret-position="172">
+          <caret line="107" column="57" selection-start-line="107" selection-start-column="57" selection-end-line="107" selection-end-column="57" />
         </state>
       </provider>
     </entry>
