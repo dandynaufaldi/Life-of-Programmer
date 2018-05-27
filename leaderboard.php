@@ -46,8 +46,13 @@ include_once ('_conn.php');
 <script src="js/datatables.min.js"></script>
 <script>
     $(document).ready( function () {
-        $('#leaderboard').DataTable();
+        $('#leaderboard').DataTable({
+            "order": [[ 2, "desc" ]]
+        });
     } );
 </script>
-<?php include_once ('layout/script.php')?>
+<?php
+include_once ('error.php');
+include_once ('layout/script.php')
+?>
 </html>

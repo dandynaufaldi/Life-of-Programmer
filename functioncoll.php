@@ -52,7 +52,7 @@
     function getQueryRes($q){
         global $db;
         $result = $db->query($q);
-        if (!$result || $result->num_rows == 0)
+        if (!$result)
             return false;
         return $result;
     }
@@ -108,6 +108,7 @@
     //nanti cek lv kalau null -> beli, ga null -> upgrade
     function getListEquip($userid){
         $q = "CALL sp_listequip('$userid')";
+//        echo $q.'<br>';
         $data = getQueryRes($q);
         return $data;
     }

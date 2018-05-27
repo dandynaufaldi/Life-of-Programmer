@@ -1,5 +1,6 @@
 <?php
 include_once ('_conn.php');
+include_once ('cekuser.php');
 ?>
 <html>
     <?php include_once ('layout/head.php');?>
@@ -69,72 +70,6 @@ include_once ('_conn.php');
                 </table>
             </div>
         </div>
-
-        <?php $jobs = getUserJob($userid); echo $db->error;?>
-        <h3 style="text-align: center;">Job History</h3>
-        <div class="container">
-            <div class="col-md-4 col-md-offset-4">
-                <table id="jobtable" class="table table-bordered table-hover text-center">
-                    <thead>
-                    <tr>
-                        <td>#</td>
-                        <td>Time</td>
-                        <td>Job Name</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if ($jobs){
-                        $no = 1;
-                        while ($job = $jobs->fetch_array()){
-                            echo '<tr>';
-                            echo '<td>'.$no.'</td>';
-                            echo '<td>'.$job[0].'</td>';
-                            echo '<td>'.$job[1].'</td>';
-                            echo '</tr>';
-                            $no +=1;
-                        }
-                        $jobs->close();
-                    }
-                    $db->next_result();
-                    ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <?php $courses = getUserCourse($userid); echo $db->error;?>
-        <h3 style="text-align: center;">Course History</h3>
-        <div class="container">
-            <div class="col-md-4 col-md-offset-4">
-                <table id="coursetable" class="table table-bordered table-hover text-center">
-                    <thead>
-                    <tr>
-                        <td>#</td>
-                        <td>Time</td>
-                        <td>Course Name</td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <?php
-                    if ($courses){
-                        $no = 1;
-                        while ($course = $courses->fetch_array()){
-                            echo '<tr>';
-                            echo '<td>'.$no.'</td>';
-                            echo '<td>'.$course[0].'</td>';
-                            echo '<td>'.$course[1].'</td>';
-                            echo '</tr>';
-                            $no +=1;
-                        }
-                        $courses->close();
-                    }
-                    $db->next_result();
-                    ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </body>
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
@@ -147,5 +82,8 @@ include_once ('_conn.php');
             $('#coursetable').DataTable();
         } );
     </script>
-    <?php include_once ('layout/script.php')?>
+    <?php
+    include_once ('error.php');
+    include_once ('layout/script.php')
+    ?>
 </html>

@@ -24,6 +24,7 @@
             <li class="<?php echo (getLastURL() == 'job.php') ? 'active' : '';?>"><a href="job.php">Job</a></li>
             <li class="<?php echo (getLastURL() == 'equipment.php') ? 'active' : '';?>"><a href="equipment.php">Equipment</a></li>
             <li class="<?php echo (getLastURL() == 'leaderboard.php') ? 'active' : '';?>"><a href="leaderboard.php">Leaderboard</a></li>
+            <button type="button" class="btn btn-default navbar-btn" data-toggle="modal" data-target="#tutorModal">Tutorial</button>
         </ul>
         <ul class="nav navbar-nav navbar-right">
             <li class="dropdown">
@@ -41,11 +42,19 @@
 <nav class="nav navbar-inverse" style="color: #9d9d9d; line-height: 20px; padding: 10px 0px;">
     <div class="container-fluid ">
         <div class="col-md-5 nav navbar-nav" style="padding: 10px 0px;">
-            <div class="col-md-4">Now doing:<span id="acttype"></span>
-                <div id="actname"></div>
-                <input type="hidden" value="" id="actid">
+            <div class="col-md-4">Now doing:
+                <span id="acttype">
+                    <?php
+                    if (isset($_SESSION['jenis'])) echo $_SESSION['jenis'];
+                    ?>
+                </span>
+                <div id="actname">
+                    <?php
+                    if (isset($_SESSION['nama'])) echo $_SESSION['nama'];
+                    ?>
+                </div>
             </div>
-            <div class="col-md-8" style="font-weight: bold;"></div>
+            <div class="col-md-8" style="font-weight: bold;" id="demo"></div>
         </div>
         <div class="col-md-7 nav navbar-nav" style="text-align: center;">
             <div class="col-md-3"><span style="font-weight: bold;">Money</span>
@@ -71,6 +80,24 @@
         </div>
     </div>
 </nav>
+
+<div id="tutorModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div style="font-weight: bold" class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Tutorial</h4>
+            </div>
+            <div class="modal-body">
+                Welcome to Life of Programmer. Start your journey to be a good programmer by taking course to gain new skill.
+                You can get money from doing jobs and use it to buy equipment that will support your carrer.
+                <em>Notice that you are not allowed to do multiple things at once.</em> So, be patient to wait for your activity to be done.
+                Check your inventory at Home.
+                Enjoy your journey :)
+            </div>
+        </div>
+    </div>
+</div>
 <?php
 //    var_dump(getUserStats($userid));
 //    echo '<br>';
@@ -81,7 +108,7 @@
 //            echo $hh['JOB_ID'];
 //        }
 //    }
-//
+//        echo date('d F Y H:i:s');
 //    echo '<br>';
 //    print_r(getMaxExp($level));
 //    echo "<br>";

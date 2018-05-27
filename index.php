@@ -128,7 +128,7 @@
 <script src="js/bootstrap.min.js"></script>
 <script>
     <?php
-        include_once ('error.php');
+    include_once ('error.php');
     ?>
     $(document).ready(function () {
         $('#r_password2').keyup(function () {
